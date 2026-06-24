@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+import os
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import mysql.connector
 from datetime import date
@@ -6,12 +7,22 @@ from datetime import date
 app = Flask(__name__)
 CORS(app)
 
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Frontend')
+
+@app.route('/')
+def index():
+    return send_from_directory(FRONTEND_DIR, 'index.html')
+
+@app.route('/<path:filename>')
+def frontend(filename):
+    return send_from_directory(FRONTEND_DIR, filename)
+
 def conectar():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Hl180903!#",
-        database="inventario_escolar"
+        host=os.getenv("DB_HOST", "localhost"),
+        user=os.getenv("DB_USER", "root"),
+        password=os.getenv("DB_PASSWORD", "Hl180903!#"),
+        database=os.getenv("DB_NAME", "inventario_escolar")
     )
 
 # ─── USUARIO ───────────────────────────────
