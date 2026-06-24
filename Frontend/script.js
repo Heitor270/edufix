@@ -1,3 +1,8 @@
+// ── URL DA API ───────────────────────────────
+const API_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+    ? 'http://127.0.0.1:5000'
+    : '';
+
 // ── SPLASH SCREEN ────────────────────────────
 
 function iniciarSplash() {
@@ -285,7 +290,7 @@ function login() {
 
     if (!valido) return;
 
-    fetch('http://127.0.0.1:5000/login', {
+    fetch(API_URL + '/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha })
@@ -357,7 +362,7 @@ function cadastrar() {
 
     if (!valido) return;
 
-    fetch('http://127.0.0.1:5000/cadastrar', {
+    fetch(API_URL + '/cadastrar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(campos)
@@ -419,7 +424,7 @@ function formatarData(d) {
 // ── DASHBOARD ─────────────────────────────────
 
 function carregarDashboard() {
-    fetch('http://127.0.0.1:5000/equipamentos')
+    fetch(API_URL + '/equipamentos')
     .then(res => res.json())
     .then(data => {
         const total     = document.getElementById('total-itens');
@@ -428,7 +433,7 @@ function carregarDashboard() {
         if (manutencao) manutencao.textContent = data.filter(e => e.status === 'em_manutencao').length;
     }).catch(() => {});
 
-    fetch('http://127.0.0.1:5000/chamados')
+    fetch(API_URL + '/chamados')
     .then(res => res.json())
     .then(data => {
         const totalChamados = document.getElementById('total-chamados');
@@ -453,7 +458,7 @@ function carregarDashboard() {
 let todosEquipamentos = [];
 
 function carregarEquipamentos() {
-    fetch('http://127.0.0.1:5000/equipamentos')
+    fetch(API_URL + '/equipamentos')
     .then(res => res.json())
     .then(data => { todosEquipamentos = data; renderizarTabela(data); });
 }
@@ -489,7 +494,7 @@ function filtrarTabela() {
 
 function deletarEquipamento(id) {
     if (!confirm('Tem certeza que deseja remover este equipamento?')) return;
-    fetch(`http://127.0.0.1:5000/equipamentos/${id}`, { method: 'DELETE' })
+    fetch(`${API_URL}/equipamentos/${id}`, { method: 'DELETE' })
     .then(res => res.json())
     .then(data => {
         if (data.sucesso) {
@@ -504,7 +509,7 @@ function deletarEquipamento(id) {
 let todosChamados = [];
 
 function carregarChamados() {
-    fetch('http://127.0.0.1:5000/chamados')
+    fetch(API_URL + '/chamados')
     .then(res => res.json())
     .then(data => { todosChamados = data; renderizarChamados(data); })
     .catch(() => {
@@ -551,7 +556,7 @@ function abrirChamado() {
     }
 
     const busca = patrimonio
-        ? fetch('http://127.0.0.1:5000/equipamentos').then(r => r.json())
+        ? fetch(API_URL + '/equipamentos').then(r => r.json())
         : Promise.resolve([]);
 
     busca.then(equipamentos => {
@@ -564,7 +569,7 @@ function abrirChamado() {
             }
             id_equipamento = eq.id_equipamento;
         }
-        return fetch('http://127.0.0.1:5000/chamados', {
+        return fetch(API_URL + '/chamados', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_usuario: usuario.id_usuario, id_equipamento, prioridade, descricao_problema: descricao })
@@ -613,16 +618,16 @@ function visualizarRelatorio() {
     let url = '';
     if (aba === 'patrimonio') {
         const cat = document.getElementById('categoria-relatorio').value;
-        url = 'http://127.0.0.1:5000/relatorio/equipamentos';
+        url = API_URL + '/relatorio/equipamentos';
         if (cat && cat !== 'todas') url += '?categoria=' + encodeURIComponent(cat);
     } else if (aba === 'chamados') {
         const status = document.getElementById('status-relatorio')?.value;
-        url = 'http://127.0.0.1:5000/relatorio/chamados';
+        url = API_URL + '/relatorio/chamados';
         if (status && status !== 'todos') url += '?status=' + status;
     } else if (aba === 'atividades') {
-        url = 'http://127.0.0.1:5000/relatorio/usuarios';
+        url = API_URL + '/relatorio/usuarios';
     } else {
-        url = 'http://127.0.0.1:5000/relatorio';
+        url = API_URL + '/relatorio';
     }
 
     fetch(url)
@@ -713,7 +718,7 @@ function salvarBem() {
 
     if (!valido) return;
 
-    fetch('http://127.0.0.1:5000/equipamentos', {
+    fetch(API_URL + '/equipamentos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
